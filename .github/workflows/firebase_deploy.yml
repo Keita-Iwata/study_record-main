@@ -20,6 +20,8 @@ jobs:
         run: npm install
       - name: Run build
         run: npm run build
+      - name: Output build directory contents for debugging
+        run: ls -la
       - name: Verify build output
         run: ls -la ./dist
   
