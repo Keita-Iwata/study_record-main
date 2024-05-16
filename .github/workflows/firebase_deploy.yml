@@ -21,22 +21,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run build and log output
-        run: |
-          npm run build
-        continue-on-error: true
+      - name: Run build
+        run: npm run build
 
       - name: Output root directory contents for debugging
         run: ls -la ${{ github.workspace }}
 
-      - name: Output build directory contents for debugging
-        run: ls -la ${{ github.workspace }}/dist
-        continue-on-error: true
-
   deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -54,9 +47,6 @@ jobs:
         run: |
           echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ${{ github.workspace }}/firebase-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
-
-      - name: Verify build output before deploy
-        run: ls -la ${{ github.workspace }}/dist
 
       - name: Deploy to Firebase Hosting
         run: firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }}
