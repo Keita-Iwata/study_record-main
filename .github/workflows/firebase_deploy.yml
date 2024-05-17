@@ -39,11 +39,11 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-      - name: Install dependencies #追記
+      - name: Install dependencies
         run: npm install
 
-      - name: Run build #追記
-        run: npm run build
+      # - name: Run build
+      #   run: npm run build
 
       - name: Install firebase-tools
         run: npm install -g firebase-tools
