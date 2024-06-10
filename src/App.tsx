@@ -59,7 +59,7 @@ function App() {
   return (
     <>
       <h1 data-testid="title">学習記録アプリ</h1>
-      <Button data-testid="register-modal" onClick={onOpen}>学習内容の登録はこちら</Button>
+      <Button data-testid="register-modal" onClick={onOpen} mt={4} mb={4}>学習内容の登録はこちら</Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

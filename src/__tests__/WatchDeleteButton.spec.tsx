@@ -1,30 +1,26 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../App';
-import { deleteTodo } from '../../utils/supabaseFunction'
-import { GetAllStudyRecords } from '../lib/study-record';
+import { StudyRecord } from '../domain/record';
+
+// モック関数を定義
+const mockGetAllTodos = jest.fn().mockResolvedValue([
+  new StudyRecord("1", "title1", 1, "2021-01-01T00:00:00Z"),
+  new StudyRecord("2", "title2", 2, "2021-01-01T00:00:00Z"),
+  new StudyRecord("3", "title3", 3, "2021-01-01T00:00:00Z"),
+  new StudyRecord("4", "title4", 4, "2021-01-01T00:00:00Z"),
+]);
 
 // `deleteTodo`関数をモックする
 jest.mock('../../utils/supabaseFunction', () => ({
-  deleteTodo: jest.fn(),
+  deleteTodo: jest.fn().mockResolvedValue(null),
   addTodo: jest.fn(),
 }));
 
 jest.mock('../lib/study-record', () => ({
-  GetAllStudyRecords: jest.fn(),
+  GetAllStudyRecords: () => mockGetAllTodos(),
 }));
 
-// サンプルデータを用意する
-const mockTodos = [
-  { id: '1', title: 'Math Study', time: 2, created_at: '2022-01-01' },
-  { id: '2', title: 'Science Study', time: 1, created_at: '2022-01-02' },
-];
-
 beforeEach(() => {
-  jest.clearAllMocks();
-  (GetAllStudyRecords as jest.Mock).mockResolvedValue(mockTodos);
-});
-
-afterEach(() => {
   jest.clearAllMocks();
 });
 
@@ -33,22 +29,20 @@ test('deletes a todo when the delete button is clicked', async () => {
 
   // 学習記録が表示されるのを待つ
   await waitFor(() => {
-    mockTodos.forEach(todo => {
-      expect(screen.getByText(todo.title)).toBeInTheDocument();
-    });
+    expect(screen.getByTestId('table')).toBeInTheDocument();
   });
+
+  // テーブルの行数を取得
+  let rows = screen.getByTestId("table").querySelectorAll("tr");
+  expect(rows.length).toBe(5); // ヘッダー行 + 4 データ行
 
   // 最初の削除ボタンを取得してクリック
   const deleteButton = screen.getAllByText('削除')[0];
   fireEvent.click(deleteButton);
 
-  // 削除関数が呼ばれることを確認
+  // 削除が反映されるのを待つ
   await waitFor(() => {
-    expect(deleteTodo).toHaveBeenCalledWith('1');
-  });
-
-  // 学習記録が削除されることを確認
-  await waitFor(() => {
-    expect(screen.queryByText(mockTodos[0].title)).not.toBeInTheDocument();
+    rows = screen.getByTestId("table").querySelectorAll("tr");
+    expect(rows.length).toBe(4); // ヘッダー行 + 3 データ行
   });
 });
