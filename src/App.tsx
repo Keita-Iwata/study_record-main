@@ -119,7 +119,7 @@ function App() {
                 mb="3"
               />
               {errors.time && <p data-testid="time-error" style={{ color: 'red' }}>{String(errors.time.message)}</p>}
-              <Button data-testid="register-button" type="submit" mr="3">{isEditTodo ? "保存" : "登録する"}</Button>
+              <Button data-testid="register-button" type="submit" mr="3">{isEditTodo ? "保存" : "登録"}</Button>
               <Button onClick={onClose}>キャンセル</Button>
               <p className="error-message" data-testid="error">{error}</p>
             </form>
