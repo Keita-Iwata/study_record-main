@@ -20,10 +20,6 @@ jest.mock('../lib/study-record', () => ({
   GetAllStudyRecords: () => mockGetAllTodos(),
 }));
 
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 test('deletes a todo when the delete button is clicked', async () => {
   render(<App />);
 

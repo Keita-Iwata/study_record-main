@@ -3,6 +3,11 @@ import "@testing-library/jest-dom";
 import App from "../App";
 
 describe("time error", () => {
+  // beforeEach(() => {
+  //   jest.clearAllMocks();
+  //   // 他の初期化処理
+  // });
+
   it("No time input", async() => {
     render(<App/>);
 

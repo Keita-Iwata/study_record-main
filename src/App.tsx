@@ -2,7 +2,7 @@ import { Button, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalH
 import "./App.css";
 import { StudyRecord } from "./domain/record";
 import { formatDate } from "./domain/record";
-import { addTodo, deleteTodo } from "../utils/supabaseFunction";
+import { addTodo, deleteTodo, updateTodo } from "../utils/supabaseFunction";
 import { useEffect, useState } from "react";
 import { GetAllStudyRecords } from "./lib/study-record";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -16,7 +16,9 @@ function App() {
   const [todos, setTodos] = useState<StudyRecord[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose: originalOnClose } = useDisclosure();
+  const [isEditTodo, setIsEditTodo] = useState<boolean>(false);
+  const [editingTodo, setEditingTodo] = useState<StudyRecord | null>(null);
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({ mode: "onChange" });
 
   useEffect(() => {
@@ -30,13 +32,24 @@ function App() {
   }, []);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const { title, time } = data;
-    const insertedRecord = await addTodo(title, time); // Supabaseにデータを挿入
-    setTodos([...todos, {
-      ...insertedRecord[0],
-      created_at: formatDate(insertedRecord[0].created_at) // 日付をフォーマット
-    }]);
-    reset(); // フォームをリセット
+    if (isEditTodo && editingTodo) {
+      const { title, time } = data;
+      const updatedRecord = await updateTodo(editingTodo.id, title, time); // Supabaseにデータを更新
+      setTodos(todos.map(todo => todo.id === editingTodo.id ? {
+        ...updatedRecord[0],
+        created_at: formatDate(updatedRecord[0].created_at) // 日付をフォーマット
+      } : todo));
+      reset(); // フォームをリセット
+      setEditingTodo(null); // 編集状態をリセット
+    } else {
+      const { title, time } = data;
+      const insertedRecord = await addTodo(title, time); // Supabaseにデータを挿入
+      setTodos([...todos, {
+        ...insertedRecord[0],
+        created_at: formatDate(insertedRecord[0].created_at) // 日付をフォーマット
+      }]);
+      reset(); // フォームをリセット
+    }
     onClose(); // モーダルを閉じる
   };
 
@@ -52,6 +65,26 @@ function App() {
     }
   }
 
+  const onNewOpen = () => {
+    setIsEditTodo(false);
+    reset({ title: "", time: "" });
+    onOpen();
+  }
+
+  const onEditOpen = (todo: StudyRecord) => {
+    setIsEditTodo(true);
+    setEditingTodo(todo);
+    reset(todo);
+    onOpen();
+  }
+
+  const onClose = () => {
+    reset(); // フォームをリセット
+    setEditingTodo(null); // 編集状態をリセット
+    setIsEditTodo(false); // 編集モードをリセット
+    originalOnClose(); // 元の onClose 関数を呼び出してモーダルを閉じる
+  };
+
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -59,11 +92,11 @@ function App() {
   return (
     <>
       <h1 data-testid="title">学習記録アプリ</h1>
-      <Button data-testid="register-modal" onClick={onOpen} mt={4} mb={4}>学習内容の登録はこちら</Button>
+      <Button className="newRegister" data-testid="register-modal" onClick={onNewOpen} mt={4} mb={4}>学習内容の登録はこちら</Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader data-testid="modal-header">新規登録</ModalHeader>
+          <ModalHeader data-testid="modal-header">{isEditTodo ? "登録内容の編集" : "新規登録"}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -86,7 +119,7 @@ function App() {
                 mb="3"
               />
               {errors.time && <p data-testid="time-error" style={{ color: 'red' }}>{String(errors.time.message)}</p>}
-              <Button data-testid="register-button" type="submit" mr="3">登録</Button>
+              <Button data-testid="register-button" type="submit" mr="3">{isEditTodo ? "保存" : "登録"}</Button>
               <Button onClick={onClose}>キャンセル</Button>
               <p className="error-message" data-testid="error">{error}</p>
             </form>
@@ -111,6 +144,7 @@ function App() {
                 <Td>{todo.title}</Td>
                 <Td>{todo.time}</Td>
                 <Td>{todo.created_at}</Td>
+                <Button onClick={() => onEditOpen(todo)}>編集</Button>
                 <Button onClick={() => onDelete(todo.id)}>削除</Button>
               </Tr>
             ))}
