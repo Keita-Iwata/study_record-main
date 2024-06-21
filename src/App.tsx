@@ -67,7 +67,7 @@ function App() {
 
   const onNewOpen = () => {
     setIsEditTodo(false);
-    reset({ title: "", time: "" });
+    reset({ title: "", time: undefined });
     onOpen();
   }
 
