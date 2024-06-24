@@ -62,3 +62,9 @@ jobs:
       - name: Delete GOOGLE_APPLICATION_CREDENTIALS
         run: rm ${{ github.workspace }}/firebase-key.json
         if: always()
+
+      - name: Debug environment variables
+        run: echo $GOOGLE_APPLICATION_CREDENTIALS
+
+      - name: Check Firebase CLI version
+        run: firebase --version
