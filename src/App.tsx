@@ -134,7 +134,7 @@ function App() {
               <Th>id</Th>
               <Th>学習内容</Th>
               <Th>学習時間</Th>
-              <Th>日付</Th>
+              <Th>日時</Th>
             </Tr>
           </Thead>
           <Tbody>
