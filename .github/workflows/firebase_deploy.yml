@@ -54,17 +54,17 @@ jobs:
           echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ${{ github.workspace }}/firebase-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
 
-      - name: Deploy to Firebase Hosting
-        run: firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }}
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
-
-      - name: Delete GOOGLE_APPLICATION_CREDENTIALS
-        run: rm ${{ github.workspace }}/firebase-key.json
-        if: always()
-
       - name: Debug environment variables
         run: echo $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Check Firebase CLI version
         run: firebase --version
+
+      - name: Deploy to Firebase Hosting
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
+        run: firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }}
+
+      - name: Delete GOOGLE_APPLICATION_CREDENTIALS
+        if: always()
+        run: rm ${{ github.workspace }}/firebase-key.json
