@@ -55,7 +55,7 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
 
       - name: Debug environment variables
-        run: echo $GOOGLE_APPLICATION_CREDENTIALS
+        run: cat ${{ github.workspace }}/firebase-key.json
 
       - name: Check Firebase CLI version
         run: firebase --version
