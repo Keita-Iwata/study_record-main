@@ -52,6 +52,7 @@ jobs:
       - name: Decode Firebase service account key
         run: |
           echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ${{ github.workspace }}/firebase-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
 
       - name: Deploy to Firebase Hosting
         run: firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }}
@@ -59,5 +60,5 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
 
       - name: Delete GOOGLE_APPLICATION_CREDENTIALS
-        run: rm $GOOGLE_APPLICATION_CREDENTIALS
-        if: ${{ always() }}
+        run: rm ${{ github.workspace }}/firebase-key.json
+        if: always()
