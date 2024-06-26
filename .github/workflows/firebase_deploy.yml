@@ -21,6 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Verify Supabase environment variables
+        run: |
+          echo "VITE_SUPABASE_URL=${{secrets.SUPABASE_URL}}"
+          echo "VITE_SUPABASE_ANON_KEY=${{secrets.SUPABASE_ANON_KEY}}"
+        
       - name: Run build
         run: npm run build
         env:
@@ -56,9 +61,6 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_KEY }}' > ${{ github.workspace }}/firebase-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
-      
-      - name: Debug Firebase key file
-        run: cat ${{ github.workspace }}/firebase-key.json
 
       - name: Check Firebase CLI version
         run: firebase --version
