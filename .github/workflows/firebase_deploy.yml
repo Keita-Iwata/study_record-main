@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install firebase-tools
+      - name: Install firebase-tool
         run: npm install -g firebase-tools
 
       - name: Enable Firebase webframeworks experiment
