@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "custom-studt-recored",
-    "　": "custom-studt-recored"
+    "default": "custom-studt-recored"
   },
   "targets": {},
   "etags": {},
