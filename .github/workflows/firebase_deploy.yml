@@ -49,12 +49,12 @@ jobs:
       - name: Enable Firebase webframeworks experiment
         run: firebase experiments:enable webframeworks
 
-      - name: Decode Firebase service account key
+      - name: Setup Firebase credentials
         run: |
-          echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ${{ github.workspace }}/firebase-key.json
+          echo '${{ secrets.FIREBASE_KEY }}' > ${{ github.workspace }}/firebase-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
-
-      - name: Debug environment variables
+      
+      - name: Debug Firebase key file
         run: cat ${{ github.workspace }}/firebase-key.json
 
       - name: Check Firebase CLI version
