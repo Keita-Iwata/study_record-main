@@ -23,6 +23,9 @@ jobs:
 
       - name: Run build
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{secrets.SUPABASE_URL}}
+          VITE_SUPABASE_ANON_KEY: ${{secrets.SUPABASE_ANON_KEY}}
 
       - name: Output root directory contents for debugging
         run: ls -la ${{ github.workspace }}
@@ -43,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install firebase-tool
+      - name: Install firebase-tools
         run: npm install -g firebase-tools
 
       - name: Enable Firebase webframeworks experiment
