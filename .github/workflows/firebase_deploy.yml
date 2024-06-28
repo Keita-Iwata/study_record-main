@@ -35,6 +35,12 @@ jobs:
       - name: Output root directory contents for debugging
         run: ls -la ${{ github.workspace }}
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist  # あなたのビルド出力ディレクトリに合わせて調整してください
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -51,8 +57,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Download build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist  # デプロイに使用するディレクトリに合わせて調整してください
+
       - name: Install firebase-tools
-        run: npm install -g firebase-tools
+        run: npm install firebase-tools
 
       - name: Enable Firebase webframeworks experiment
         run: firebase experiments:enable webframeworks
