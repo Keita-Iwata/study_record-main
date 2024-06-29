@@ -25,7 +25,8 @@ jobs:
         run: |
           echo "VITE_SUPABASE_URL=${{secrets.SUPABASE_URL}}" >> .env
           echo "VITE_SUPABASE_ANON_KEY=${{secrets.SUPABASE_ANON_KEY}}" >> .env
-        
+          cat .env  # 確認用に.envファイルの内容を出力
+
       - name: Run build
         run: npm run build
         env:
