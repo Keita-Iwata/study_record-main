@@ -6,8 +6,7 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -16,73 +15,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm install
 
-      - name: Verify Supabase environment variables
-        run: |
-          echo "VITE_SUPABASE_URL=${{secrets.SUPABASE_URL}}" >> .env
-          echo "VITE_SUPABASE_ANON_KEY=${{secrets.SUPABASE_ANON_KEY}}" >> .env
-          cat .env  # 確認用に.envファイルの内容を出力
+      - name: Run tests
+        run: npm run test
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Run build
         run: npm run build
         env:
-          VITE_SUPABASE_URL: ${{secrets.SUPABASE_URL}}
-          VITE_SUPABASE_ANON_KEY: ${{secrets.SUPABASE_ANON_KEY}}
-
-      - name: Output root directory contents for debugging
-        run: ls -la ${{ github.workspace }}
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist
-          path: dist  # あなたのビルド出力ディレクトリに合わせて調整してください
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js and cache
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: dist
-          path: dist  # デプロイに使用するディレクトリに合わせて調整してください
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Install firebase-tools
-        run: npm install -g firebase-tools
+        run: npm install --save-dev firebase-tools
 
-      - name: Enable Firebase webframeworks experiment
-        run: firebase experiments:enable webframeworks
-
-      - name: Setup Firebase credentials
-        run: |
-          echo '${{ secrets.FIREBASE_KEY }}' > ${{ github.workspace }}/firebase-key.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
-
-      - name: Check Firebase CLI version
-        run: firebase --version
-
-      - name: Deploy to Firebase Hosting
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
-        run: firebase deploy --only hosting --project ${{ secrets.FIREBASE_PROJECT_ID }}
-
-      - name: Delete GOOGLE_APPLICATION_CREDENTIALS
-        if: always()
-        run: rm ${{ github.workspace }}/firebase-key.json
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
