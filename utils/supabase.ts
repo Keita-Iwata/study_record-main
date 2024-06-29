@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Ensure that the environment variables are correctly accessed
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+console.log('Environment Variables:', process.env);
+// 環境変数の読み取り
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
+// 環境変数の存在確認
 if (!SUPABASE_URL) {
   throw new Error('supabaseUrl is required.');
 }
