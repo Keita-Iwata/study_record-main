@@ -37,13 +37,6 @@ jobs:
         with:
           name: dist
           path: dist
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v4.1.7
-        with:
-          name: my-artifact # ここにアーティファクトの名前を指定
-          path: ./path-to-download # ここにダウンロード先のパスを指定
-          merge-multiple: false # 必要に応じてtrueまたはfalseを指定
-                  
 
   deploy:
     needs: build
