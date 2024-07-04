@@ -83,9 +83,6 @@ jobs:
           name: env-output
           path: .
 
-      - name: Output .env file contents for debugging
-        run: cat .env
-
       - name: Deploy to Firebase Hosting
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
