@@ -1,6 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-console.log('Environment Variables:', process.env);
+console.log('Environment Variables:');
+console.log(process.env.VITE_SUPABASE_URL);
+console.log(process.env.VITE_SUPABASE_ANON_KEY);
+
 // 環境変数の読み取り
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
