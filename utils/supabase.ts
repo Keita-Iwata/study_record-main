@@ -1,6 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
 console.log('Environment Variables:');
+console.log(process.env.SUPABASE_URL);
+console.log(process.env.SUPABASE_ANON_KEY);
+
 console.log(process.env.VITE_SUPABASE_URL);
 console.log(process.env.VITE_SUPABASE_ANON_KEY);
 
